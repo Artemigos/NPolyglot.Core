@@ -1,0 +1,37 @@
+﻿<?xml version="1.0"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <UsingTask AssemblyFile="$(MSBuildThisFileDirectory)NPolyglot.Core.dll" TaskName="PreprocessDslCode" Condition="Exists('$(MSBuildThisFileDirectory)NPolyglot.Core.dll')" />
+  <UsingTask AssemblyFile="$(MSBuildThisFileDirectory)bin\$(Configuration)\NPolyglot.Core.dll" TaskName="PreprocessDslCode" Condition="!Exists('$(MSBuildThisFileDirectory)NPolyglot.Core.dll')" />
+
+  <ItemGroup>
+    <AvailableItemName Include="DslCode" />
+    <TemplateOutputs Include="@(DslCode -> '$(DslCodePath)%(Filename).cs')" />
+  </ItemGroup>
+  <ItemDefinitionGroup>
+    <DslCode>
+      <Generator>MSBuild:Compile</Generator>
+    </DslCode>
+  </ItemDefinitionGroup>
+  <PropertyGroup>
+    <DslOutPath>$(IntermediateOutputPath)_npolyglot\</DslOutPath>
+    <DslCodePath>$(DslOutPath)code\</DslCodePath>
+  </PropertyGroup>
+
+  <Target Name="ProcessDSLs" BeforeTargets="CoreCompile">
+    <MakeDir Directories="$(DslOutPath)" />
+    <MakeDir Directories="$(DslCodePath)" />
+    <CallTarget Targets="Parse; Transform" />
+  </Target>
+
+  <Target Name="Parse" DependsOnTargets="$(ParseDependsOn)">
+  </Target>
+
+  <Target Name="Transform" DependsOnTargets="$(TransformDependsOn)">
+  </Target>
+
+  <Target Name="PreprocessDslCode">
+    <PreprocessDslCode DslCodeFiles="@(DslCode)">
+      <Output TaskParameter="DslCodeWithMetadata" ItemName="_PreprocessedDslCode" />
+    </PreprocessDslCode>
+  </Target>
+</Project>
