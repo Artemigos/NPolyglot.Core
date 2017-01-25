@@ -1,4 +1,4 @@
-# NPolyglot Core
+# NPolyglot Core [![NuGet](https://img.shields.io/nuget/v/NPolyglot.Core.svg)](https://github.com/Artemigos/NPolyglot.Core)
 Infastructure for NPolyglot - a tool that allows you to create custom DSLs processed entirely during compile time. Useless by itself - to start using it:
 
 1. Install a parser package
