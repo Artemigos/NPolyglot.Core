@@ -14,6 +14,7 @@ Infastructure for NPolyglot - a tool that allows you to create custom DSLs proce
 Also, be aware that the `DslCode` file might need to point to the parser and template that should be used to process it. This can be done in 2 ways:
 * add `@parser ParserName` and `@template TemplateName` directives at the top of the `DslCode` file, one directive per line
 * edit csproj to add them as item metadata:
+
   ```xml
   <DslCode Include="your_file.txt">
     <Parser>ParserName</Parser>
