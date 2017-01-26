@@ -2,7 +2,7 @@
 <package>
   <metadata>
     <id>NPolyglot.Core</id>
-    <version>0.1.0-alpha</version>
+    <version>$version$</version>
     <authors>Łukasz Klimek</authors>
     <projectUrl>https://github.com/Artemigos/NPolyglot.Core</projectUrl>
     <licenseUrl>https://github.com/Artemigos/NPolyglot.Core/blob/master/LICENSE</licenseUrl>

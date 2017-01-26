@@ -17,16 +17,16 @@
     disable_publish_on_pr: true
   platform: Any CPU
   configuration: Release
-  build:
-    publish_nuget: true
+  after_build:
+    - nuget pack build\Npolyglot.Core.nuspec -properties version={version}-alpha
   artifacts:
-    - path: build\*.nupkg
+    - path: '**\*.nupkg'
       type: NuGetPackage
 -
   version: 0.1.1
   branches:
     only:
-      - master
+      - develop
   skip_tags: true
   image: Visual Studio 2015
   assembly_info:
@@ -40,9 +40,9 @@
     project_feed: false
     disable_publish_on_pr: true
   platform: Any CPU
-  configuration: Release
-  build:
-    publish_nuget: true
+  configuration: Debug
+  after_build:
+    - nuget pack build\Npolyglot.Core.nuspec -properties version={version}-dev
   artifacts:
-    - path: build\*.nupkg
+    - path: '**\*.nupkg'
       type: NuGetPackage
