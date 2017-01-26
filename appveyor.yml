@@ -18,7 +18,7 @@
   platform: Any CPU
   configuration: Release
   after_build:
-    - nuget pack build\Npolyglot.Core.nuspec -properties version={version}-alpha
+    - nuget pack build\Npolyglot.Core.nuspec -properties version=0.1.0-alpha
   artifacts:
     - path: '**\*.nupkg'
       type: NuGetPackage
@@ -42,7 +42,7 @@
   platform: Any CPU
   configuration: Debug
   after_build:
-    - nuget pack build\Npolyglot.Core.nuspec -properties version={version}-dev
+    - nuget pack build\Npolyglot.Core.nuspec -properties version=0.1.1-dev
   artifacts:
     - path: '**\*.nupkg'
       type: NuGetPackage
