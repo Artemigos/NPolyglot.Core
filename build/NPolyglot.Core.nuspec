@@ -14,6 +14,6 @@
   <files>
     <file src="../src/NPolyglot.Core/NPolyglot.Core.props" target="build" />
     <file src="../src/NPolyglot.Core/NPolyglot.Core.targets" target="build" />
-    <file src="../src/NPolyglot.Core/bin/Release/NPolyglot.Core.dll" target="build" />
+    <file src="../src/NPolyglot.Core/bin/$configuration$/NPolyglot.Core.dll" target="build" />
   </files>
 </package>

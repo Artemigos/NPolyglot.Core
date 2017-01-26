@@ -18,7 +18,7 @@
   platform: Any CPU
   configuration: Release
   after_build:
-    - nuget pack build\Npolyglot.Core.nuspec -properties version=%APPVEYOR_BUILD_VERSION%-alpha
+    - nuget pack build\Npolyglot.Core.nuspec -properties version=%APPVEYOR_BUILD_VERSION%-alpha;configuration=%CONFIGURATION%
   artifacts:
     - path: '**\*.nupkg'
       type: NuGetPackage
@@ -42,7 +42,7 @@
   platform: Any CPU
   configuration: Debug
   after_build:
-    - nuget pack build\Npolyglot.Core.nuspec -properties version=%APPVEYOR_BUILD_VERSION%-dev.%APPVEYOR_BUILD_NUMBER%
+    - nuget pack build\Npolyglot.Core.nuspec -properties version=%APPVEYOR_BUILD_VERSION%-dev.%APPVEYOR_BUILD_NUMBER%;configuration=%CONFIGURATION%
   artifacts:
     - path: '**\*.nupkg'
       type: NuGetPackage
