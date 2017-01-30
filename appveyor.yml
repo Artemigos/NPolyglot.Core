@@ -17,6 +17,8 @@
     disable_publish_on_pr: true
   platform: Any CPU
   configuration: Release
+  before_build:
+    - nuget restore
   after_build:
     - nuget pack build\Npolyglot.Core.nuspec -properties version=0.1.1-alpha;configuration=%CONFIGURATION%
     - nuget pack build\Npolyglot.LanguageDesign.nuspec -properties version=0.1.1-alpha;configuration=%CONFIGURATION%
@@ -42,6 +44,8 @@
     disable_publish_on_pr: true
   platform: Any CPU
   configuration: Debug
+  before_build:
+    - nuget restore
   after_build:
     - nuget pack build\Npolyglot.Core.nuspec -properties version=0.1.1-dev;configuration=%CONFIGURATION%
     - nuget pack build\Npolyglot.LanguageDesign.nuspec -properties version=0.1.1-dev;configuration=%CONFIGURATION%
