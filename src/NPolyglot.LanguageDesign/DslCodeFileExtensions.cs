@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace NPolyglot.LanguageDesign
 {
@@ -36,5 +39,20 @@ namespace NPolyglot.LanguageDesign
 
         public static string GetSerializedObject(this ITaskItem item) =>
             item.GetMetadata(MetadataNames.Object);
+
+        public static void SetObject(this ITaskItem item, object @object)
+        {
+            var serialized = JsonConvert.SerializeObject(@object);
+            item.SetSerializedObject(serialized);
+        }
+
+        public static object GetObject(this ITaskItem item)
+        {
+            var serialized = item.GetSerializedObject();
+            var wrap = "{\"root\":" + serialized + "}";
+            dynamic obj = JsonConvert.DeserializeObject<ExpandoObject>(wrap, new ExpandoObjectConverter());
+
+            return obj.root;
+        }
     }
 }
