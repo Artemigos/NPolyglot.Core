@@ -4,15 +4,13 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{F815FFDC-ECDB-44C4-86E6-523011F1496F}</ProjectGuid>
+    <ProjectGuid>{3A725E8E-F373-492C-9A90-9F8CD962E13A}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>NPolyglot.Core</RootNamespace>
-    <AssemblyName>NPolyglot.Core</AssemblyName>
+    <RootNamespace>NPolyglot.LanguageDesign</RootNamespace>
+    <AssemblyName>NPolyglot.LanguageDesign</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -44,22 +42,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="PreprocessDslCode.cs" />
+    <Compile Include="DslCodeFileExtensions.cs" />
+    <Compile Include="MetadataNames.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="NPolyglot.Core.props">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="NPolyglot.Core.targets">
-      <SubType>Designer</SubType>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\NPolyglot.LanguageDesign\NPolyglot.LanguageDesign.csproj">
-      <Project>{3a725e8e-f373-492c-9a90-9f8cd962e13a}</Project>
-      <Name>NPolyglot.LanguageDesign</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -4,6 +4,7 @@ using Microsoft.Build.Utilities;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using NPolyglot.LanguageDesign;
 
 namespace NPolyglot.Core
 {
@@ -17,19 +18,18 @@ namespace NPolyglot.Core
 
         public override bool Execute()
         {
-            DslCodeWithMetadata = DslCodeFiles.Select(x => new TaskItem(x)).ToArray();
-            for (int i = 0; i < DslCodeWithMetadata.Length; ++i)
+            DslCodeWithMetadata = DslCodeFiles.Select(x => x.Clone()).ToArray();
+            foreach (var code in DslCodeWithMetadata)
             {
-                var code = DslCodeWithMetadata[i];
-                var filename = Path.GetFileName(code.ItemSpec);
                 var fullPath = Path.GetFullPath(code.ItemSpec);
                 var content = File.ReadAllLines(fullPath);
 
-                int j = 0;
-                for (; ReadMetadataDirective(content[j], code); ++j) {}
+                int i = 0;
+                for (; ReadMetadataDirective(content[i], code); ++i) {}
 
-                var contentLines = content.Skip(j).SkipWhile(string.IsNullOrWhiteSpace);
-                code.SetMetadata("Content", string.Join(Environment.NewLine, contentLines));
+                var contentLines = content.Skip(i).SkipWhile(string.IsNullOrWhiteSpace);
+                var fullContent = string.Join(Environment.NewLine, contentLines);
+                code.SetContent(fullContent);
             }
 
             return true;
@@ -37,23 +37,26 @@ namespace NPolyglot.Core
 
         private bool ReadMetadataDirective(string directiveLine, ITaskItem resultFile)
         {
+            const string parserDirective = "parser";
+            const string templateDirective = "template";
+
             var line = directiveLine.Trim();
-            var directiveRegex = @"@(parser|template) +[~ ]*";
+            var directiveRegex = $@"@({parserDirective}|{templateDirective}) +[~ ]*";
             if (!Regex.IsMatch(line, directiveRegex))
             {
                 return false;
             }
 
             var segments = line.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-            if (segments[0] == "@parser")
+            if (segments[0] == $"@{parserDirective}")
             {
-                resultFile.SetMetadata("Parser", segments[1]);
+                resultFile.SetParser(segments[1]);
                 return true;
             }
 
-            if (segments[0] == "@template")
+            if (segments[0] == $"@{templateDirective}")
             {
-                resultFile.SetMetadata("Template", segments[1]);
+                resultFile.SetTemplate(segments[1]);
                 return true;
             }
 
