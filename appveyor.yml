@@ -1,5 +1,5 @@
 -
-  version: 0.1.0
+  version: 0.1.1.{build}
   branches:
     only:
       - master
@@ -8,8 +8,8 @@
   assembly_info:
     patch: true
     file: src\NPolyglot.Core\Properties\AssemblyInfo.cs
-    assembly_version: "{version}.0"
-    assembly_file_version: "{version}.0"
+    assembly_version: "{version}"
+    assembly_file_version: "{version}"
     assembly_informational_version: "{version}-alpha"
   nuget:
     account_feed: true
@@ -18,12 +18,13 @@
   platform: Any CPU
   configuration: Release
   after_build:
-    - nuget pack build\Npolyglot.Core.nuspec -properties version=%APPVEYOR_BUILD_VERSION%-alpha;configuration=%CONFIGURATION%
+    - nuget pack build\Npolyglot.Core.nuspec -properties version=0.1.1-alpha;configuration=%CONFIGURATION%
+    - nuget pack build\Npolyglot.LanguageDesign.nuspec -properties version=0.1.1-alpha;configuration=%CONFIGURATION%
   artifacts:
     - path: '**\*.nupkg'
       type: NuGetPackage
 -
-  version: 0.1.1
+  version: 0.1.1.{build}
   branches:
     only:
       - develop
@@ -32,9 +33,9 @@
   assembly_info:
     patch: true
     file: src\NPolyglot.Core\Properties\AssemblyInfo.cs
-    assembly_version: "{version}.1"
-    assembly_file_version: "{version}.1"
-    assembly_informational_version: "{version}-dev.{build}"
+    assembly_version: "{version}"
+    assembly_file_version: "{version}"
+    assembly_informational_version: "{version}-dev"
   nuget:
     account_feed: true
     project_feed: false
@@ -42,7 +43,8 @@
   platform: Any CPU
   configuration: Debug
   after_build:
-    - nuget pack build\Npolyglot.Core.nuspec -properties version=%APPVEYOR_BUILD_VERSION%-dev.%APPVEYOR_BUILD_NUMBER%;configuration=%CONFIGURATION%
+    - nuget pack build\Npolyglot.Core.nuspec -properties version=0.1.1-dev;configuration=%CONFIGURATION%
+    - nuget pack build\Npolyglot.LanguageDesign.nuspec -properties version=0.1.1-dev;configuration=%CONFIGURATION%
   artifacts:
     - path: '**\*.nupkg'
       type: NuGetPackage
