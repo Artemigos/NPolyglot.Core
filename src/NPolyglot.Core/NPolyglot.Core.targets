@@ -1,10 +1,13 @@
 ﻿<?xml version="1.0"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <UsingTask AssemblyFile="$(MSBuildThisFileDirectory)NPolyglot.Core.dll" TaskName="PreprocessDslCode" Condition="Exists('$(MSBuildThisFileDirectory)NPolyglot.Core.dll')" />
-  <UsingTask AssemblyFile="$(MSBuildThisFileDirectory)bin\$(Configuration)\NPolyglot.Core.dll" TaskName="PreprocessDslCode" Condition="!Exists('$(MSBuildThisFileDirectory)NPolyglot.Core.dll')" />
+  <UsingTask AssemblyFile="$(NPolyglotCoreDll)" TaskName="PreprocessDslCode" />
+  <UsingTask AssemblyFile="$(NPolyglotCoreDll)" TaskName="ParseWithCompiledParsers" />
+  <UsingTask AssemblyFile="$(NPolyglotCoreDll)" TaskName="TransformWithCompiledTransforms" />
 
   <ItemGroup>
     <AvailableItemName Include="DslCode" />
+    <AvailableItemName Include="CodedParser" />
+    <AvailableItemName Include="CodedTemplate" />
     <TemplateOutputs Include="@(DslCode -> '$(DslCodePath)%(Filename).cs')" />
   </ItemGroup>
   <ItemDefinitionGroup>
@@ -12,21 +15,58 @@
       <Generator>MSBuild:Compile</Generator>
     </DslCode>
   </ItemDefinitionGroup>
-  <PropertyGroup>
-    <DslOutPath>$(IntermediateOutputPath)_npolyglot\</DslOutPath>
-    <DslCodePath>$(DslOutPath)code\</DslCodePath>
-  </PropertyGroup>
 
   <Target Name="ProcessDSLs" BeforeTargets="CoreCompile">
     <MakeDir Directories="$(DslOutPath)" />
     <MakeDir Directories="$(DslCodePath)" />
-    <CallTarget Targets="Parse; Transform" />
+    <CallTarget Targets="PreprocessDslCode;Parse;Transform" />
   </Target>
 
   <Target Name="Parse" DependsOnTargets="$(ParseDependsOn)">
   </Target>
 
   <Target Name="Transform" DependsOnTargets="$(TransformDependsOn)">
+  </Target>
+
+  <Target Name="RunParsers">
+    <ParseWithCompiledParsers
+      ParsersDlls="$(CodedParsersDll);@(DslLanguageReference)"
+      DslCodeFiles="@(_PreprocessedDslCode)">
+      <Output TaskParameter="DslCodeWithMetadata" ItemName="_ParsedDslCode" />
+    </ParseWithCompiledParsers>
+  </Target>
+
+  <Target Name="RunTransforms">
+    <TransformWithCompiledTransforms
+      TransformsDlls="$(CodedTransformsDll);@(DslLanguageReference)"
+      ParsedFiles="@(_ParsedDslCode)"
+      OutputDir="$(DslCodePath)">
+      <Output TaskParameter="GeneratedOutput" ItemName="Compile" />
+    </TransformWithCompiledTransforms>
+  </Target>
+
+  <Target
+    Name="CompileCodedParsers"
+    Inputs="@(CodedParser);@(CodedParserReference)"
+    Outputs="$(CodedParsersDll)">
+    <Csc
+      Sources="@(CodedParser)"
+      OutputAssembly="$(CodedParsersDll)"
+      TargetType="library"
+      References="$(NPolyglotLanguageDesignDll);@(CodedParsersReference)"
+      WarningLevel="1" />
+  </Target>
+
+  <Target
+    Name="CompileCodedTransforms"
+    Inputs="@(CodedTransform);@(CodedTransformReference)"
+    Outputs="$(CodedTransformsDll)">
+    <Csc
+      Sources="@(CodedTransform)"
+      OutputAssembly="$(CodedTransformsDll)"
+      TargetType="library"
+      References="$(NPolyglotLanguageDesignDll);@(CodedTransformReference)"
+      WarningLevel="1" />
   </Target>
 
   <Target Name="PreprocessDslCode">

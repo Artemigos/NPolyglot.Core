@@ -45,6 +45,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="PreprocessDslCode.cs" />
+    <Compile Include="ParseWithCompiledParsers.cs" />
+    <Compile Include="TransformWithCompiledTransforms.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

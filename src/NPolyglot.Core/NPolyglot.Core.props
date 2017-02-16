@@ -1,7 +1,28 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Choose>
+    <When Condition="Exists('$(MSBuildThisFileDirectory)NPolyglot.Core.dll')">
+      <PropertyGroup>
+        <NPolyglotCoreDll>$(MSBuildThisFileDirectory)NPolyglot.Core.dll</NPolyglotCoreDll>
+        <NPolyglotLanguageDesignDll>$(MSBuildThisFileDirectory)NPolyglot.LanguageDesign.dll</NPolyglotLanguageDesignDll>
+      </PropertyGroup>
+    </When>
+    <Otherwise>
+      <PropertyGroup>
+        <NPolyglotCoreDll>$(MSBuildThisFileDirectory)bin\$(Configuration)\NPolyglot.Core.dll</NPolyglotCoreDll>
+        <NPolyglotLanguageDesignDll>$(MSBuildThisFileDirectory)bin\$(Configuration)\NPolyglot.LanguageDesign.dll</NPolyglotLanguageDesignDll>
+      </PropertyGroup>
+    </Otherwise>
+  </Choose>
+
   <PropertyGroup>
-    <ParseDependsOn>PreprocessDslCode</ParseDependsOn>
-    <TransformDependsOn></TransformDependsOn>
+    <ParseDependsOn>CompileCodedParsers;RunParsers</ParseDependsOn>
+    <TransformDependsOn>CompileCodedTransforms;RunTransforms</TransformDependsOn>
+  </PropertyGroup>
+  <PropertyGroup>
+    <DslOutPath>$(IntermediateOutputPath)_npolyglot\</DslOutPath>
+    <DslCodePath>$(DslOutPath)code\</DslCodePath>
+    <CodedParsersDll>$(DslOutPath)_parsers.dll</CodedParsersDll>
+    <CodedTransformsDll>$(DslOutPath)_transforms.dll</CodedTransformsDll>
   </PropertyGroup>
 </Project>

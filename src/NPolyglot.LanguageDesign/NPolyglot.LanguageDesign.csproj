@@ -47,7 +47,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DslCodeFileExtensions.cs" />
+    <Compile Include="ICodedTransform.cs" />
     <Compile Include="MetadataNames.cs" />
+    <Compile Include="ICodedParser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

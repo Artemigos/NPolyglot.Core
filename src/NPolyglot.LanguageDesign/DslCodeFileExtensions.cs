@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Dynamic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Dynamic;
+
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
+
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
