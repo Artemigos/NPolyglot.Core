@@ -29,10 +29,18 @@ namespace NPolyglot.Core
         {
             try
             {
+                Log.LogMessage(MessageImportance.Low, "Starting task");
+                Log.LogMessage(MessageImportance.Low, "Assemblies to load: {0}", string.Join("; ", TransformsDlls.Select(x => Path.GetFullPath(x.ItemSpec))));
+
+                AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
+
                 var assemblies =
                     from dll in TransformsDlls
                     let path = Path.GetFullPath(dll.ItemSpec)
-                    select Assembly.Load(path);
+                    select Assembly.LoadFile(path);
+
+                Log.LogMessage(MessageImportance.Low, "Loaded assemblies");
+                Log.LogMessage(MessageImportance.Low, "Transform candidates: {0}", string.Join(", ", assemblies.SelectMany(x => x.GetTypes())));
 
                 var transformTypes =
                     from a in assemblies
@@ -44,6 +52,8 @@ namespace NPolyglot.Core
                     .Select(x => GetDefaultConstructor(x).Invoke(new object[0]))
                     .Cast<ICodedTransform>()
                     .ToDictionary(x => x.ExportName, x => x);
+
+                Log.LogMessage(MessageImportance.Low, "Found tarnsforms: {0}", string.Join(", ", transforms.Select(x => x.Key)));
 
                 var output = new List<ITaskItem>();
                 foreach (var file in ParsedFiles.Where(IsFileValidForTransform))
@@ -87,5 +97,28 @@ namespace NPolyglot.Core
         private bool IsFileValidForTransform(ITaskItem item) =>
             item.MetadataNames.Cast<string>().Contains(MetadataNames.Object) &&
             item.MetadataNames.Cast<string>().Contains(MetadataNames.Template);
+
+        private Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
+        {
+            var alreadyLoaded = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(x => x.FullName == args.Name);
+            if (alreadyLoaded != null)
+            {
+                return alreadyLoaded;
+            }
+
+            var name = args.Name.Split(',')[0];
+            var path = Path.GetDirectoryName(args.RequestingAssembly.Location);
+            var assemblies = Directory.GetFiles(path, $"{name}.dll");
+            var found = assemblies.FirstOrDefault();
+
+            if (found == null)
+            {
+                Log.LogMessage(MessageImportance.Low, "Failed to find assembly '{0}' for '{1}'", args.Name, args.RequestingAssembly.FullName);
+                return null;
+            }
+
+            Log.LogMessage(MessageImportance.Low, "Found assembly '{0}' for '{1}'", found, args.RequestingAssembly.FullName);
+            return Assembly.LoadFile(found);
+        }
     }
 }

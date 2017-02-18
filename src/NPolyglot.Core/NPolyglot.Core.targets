@@ -4,6 +4,13 @@
   <UsingTask AssemblyFile="$(NPolyglotCoreDll)" TaskName="ParseWithCompiledParsers" />
   <UsingTask AssemblyFile="$(NPolyglotCoreDll)" TaskName="TransformWithCompiledTransforms" />
 
+  <PropertyGroup>
+    <DslOutPath>$(IntermediateOutputPath)_npolyglot\</DslOutPath>
+    <DslCodePath>$(DslOutPath)code\</DslCodePath>
+    <CodedParsersDll>$(DslOutPath)_parsers.dll</CodedParsersDll>
+    <CodedTransformsDll>$(DslOutPath)_transforms.dll</CodedTransformsDll>
+  </PropertyGroup>
+
   <ItemGroup>
     <AvailableItemName Include="DslCode" />
     <AvailableItemName Include="CodedParser" />
@@ -29,16 +36,28 @@
   </Target>
 
   <Target Name="RunParsers">
+    <ItemGroup>
+      <_ParsersDlls Include="@(DslLanguageReference)" />
+      <_ParsersDlls Include="$(CodedParsersDll)" Condition="Exists('$(CodedParsersDll)')" />
+    </ItemGroup>
+
     <ParseWithCompiledParsers
-      ParsersDlls="$(CodedParsersDll);@(DslLanguageReference)"
+      Condition="@(_ParsersDlls -> Count()) > 0"
+      ParsersDlls="@(_ParsersDlls)"
       DslCodeFiles="@(_PreprocessedDslCode)">
       <Output TaskParameter="DslCodeWithMetadata" ItemName="_ParsedDslCode" />
     </ParseWithCompiledParsers>
   </Target>
 
   <Target Name="RunTransforms">
+    <ItemGroup>
+      <_TransformsDlls Include="@(DslLanguageReference)" />
+      <_TransformsDlls Include="$(CodedTransformsDll)" Condition="Exists('$(CodedTransformsDll)')" />
+    </ItemGroup>
+
     <TransformWithCompiledTransforms
-      TransformsDlls="$(CodedTransformsDll);@(DslLanguageReference)"
+      Condition="@(_TransformsDlls -> Count()) > 0"
+      TransformsDlls="@(_TransformsDlls)"
       ParsedFiles="@(_ParsedDslCode)"
       OutputDir="$(DslCodePath)">
       <Output TaskParameter="GeneratedOutput" ItemName="Compile" />
@@ -47,7 +66,7 @@
 
   <Target
     Name="CompileCodedParsers"
-    Inputs="@(CodedParser);@(CodedParserReference)"
+    Inputs="@(CodedParser);@(CodedParsersReference)"
     Outputs="$(CodedParsersDll)">
     <Csc
       Sources="@(CodedParser)"
@@ -59,13 +78,13 @@
 
   <Target
     Name="CompileCodedTransforms"
-    Inputs="@(CodedTransform);@(CodedTransformReference)"
+    Inputs="@(CodedTransform);@(CodedTransformsReference)"
     Outputs="$(CodedTransformsDll)">
     <Csc
       Sources="@(CodedTransform)"
       OutputAssembly="$(CodedTransformsDll)"
       TargetType="library"
-      References="$(NPolyglotLanguageDesignDll);@(CodedTransformReference)"
+      References="$(NPolyglotLanguageDesignDll);@(CodedTransformsReference)"
       WarningLevel="1" />
   </Target>
 

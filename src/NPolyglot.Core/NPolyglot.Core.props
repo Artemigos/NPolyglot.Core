@@ -3,26 +3,22 @@
   <Choose>
     <When Condition="Exists('$(MSBuildThisFileDirectory)NPolyglot.Core.dll')">
       <PropertyGroup>
-        <NPolyglotCoreDll>$(MSBuildThisFileDirectory)NPolyglot.Core.dll</NPolyglotCoreDll>
-        <NPolyglotLanguageDesignDll>$(MSBuildThisFileDirectory)NPolyglot.LanguageDesign.dll</NPolyglotLanguageDesignDll>
+        <NPolyglotToolsDir>$(MSBuildThisFileDirectory)</NPolyglotToolsDir>
       </PropertyGroup>
     </When>
     <Otherwise>
       <PropertyGroup>
-        <NPolyglotCoreDll>$(MSBuildThisFileDirectory)bin\$(Configuration)\NPolyglot.Core.dll</NPolyglotCoreDll>
-        <NPolyglotLanguageDesignDll>$(MSBuildThisFileDirectory)bin\$(Configuration)\NPolyglot.LanguageDesign.dll</NPolyglotLanguageDesignDll>
+        <NPolyglotToolsDir>$(MSBuildThisFileDirectory)bin\$(Configuration)\</NPolyglotToolsDir>
       </PropertyGroup>
     </Otherwise>
   </Choose>
 
   <PropertyGroup>
-    <ParseDependsOn>CompileCodedParsers;RunParsers</ParseDependsOn>
-    <TransformDependsOn>CompileCodedTransforms;RunTransforms</TransformDependsOn>
+    <NPolyglotCoreDll>$(NPolyglotToolsDir)NPolyglot.Core.dll</NPolyglotCoreDll>
+    <NPolyglotLanguageDesignDll>$(NPolyglotToolsDir)NPolyglot.LanguageDesign.dll</NPolyglotLanguageDesignDll>
   </PropertyGroup>
   <PropertyGroup>
-    <DslOutPath>$(IntermediateOutputPath)_npolyglot\</DslOutPath>
-    <DslCodePath>$(DslOutPath)code\</DslCodePath>
-    <CodedParsersDll>$(DslOutPath)_parsers.dll</CodedParsersDll>
-    <CodedTransformsDll>$(DslOutPath)_transforms.dll</CodedTransformsDll>
+    <ParseDependsOn>CompileCodedParsers;RunParsers</ParseDependsOn>
+    <TransformDependsOn>CompileCodedTransforms;RunTransforms</TransformDependsOn>
   </PropertyGroup>
 </Project>
