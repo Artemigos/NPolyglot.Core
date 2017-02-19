@@ -15,13 +15,13 @@ namespace SampleLanguage
             dynamic d = data;
             return string.Format(
 @"namespace SampleNamespace
-{
+{{
     public class SampleClass
-    {
+    {{
         public string A => ""{0}"";
         public int B => {1};
-    }
-}", d.A, d.B);
+    }}
+}}", d.A, d.B);
         }
     }
 }
