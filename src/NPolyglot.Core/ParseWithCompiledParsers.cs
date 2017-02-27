@@ -120,7 +120,7 @@ namespace NPolyglot.Core
             if (found == null)
             {
                 Log.LogMessage(MessageImportance.Low, "Failed to find assembly '{0}' for '{1}'", args.Name, args.RequestingAssembly.FullName);
-                return null;
+                return Assembly.Load(args.Name);
             }
 
             Log.LogMessage(MessageImportance.Low, "Found assembly '{0}' for '{1}'", found, args.RequestingAssembly.FullName);

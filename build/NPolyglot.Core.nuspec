@@ -7,7 +7,7 @@
     <projectUrl>https://github.com/Artemigos/NPolyglot.Core</projectUrl>
     <licenseUrl>https://github.com/Artemigos/NPolyglot.Core/blob/master/LICENSE</licenseUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>Package with the core of NPolyglot. Doesn't do anything by itself.</description>
+    <description>Package with the core of NPolyglot.</description>
     <copyright>Copyright 2017 Łukasz Klimek</copyright>
     <tags>dsl build npolyglot</tags>
   </metadata>
