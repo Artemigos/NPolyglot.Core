@@ -21,6 +21,7 @@
     </ItemGroup>
 
     <Target Name="BeforeBuild">
+        <MakeDir Directories="$([System.IO.Path]::GetDirectoryName('$(VersionsFile)'))" />
         <WriteCodeFragment AssemblyAttributes="@(Attr)" Language="C#" OutputFile="$(VersionsFile)" />
     </Target>
 </Project>
