@@ -14,8 +14,7 @@
   <ItemGroup>
     <AvailableItemName Include="DslCode" />
     <AvailableItemName Include="CodedParser" />
-    <AvailableItemName Include="CodedTemplate" />
-    <TemplateOutputs Include="@(DslCode -> '$(DslCodePath)%(Filename).cs')" />
+    <AvailableItemName Include="CodedTransform" />
   </ItemGroup>
   <ItemDefinitionGroup>
     <DslCode>
