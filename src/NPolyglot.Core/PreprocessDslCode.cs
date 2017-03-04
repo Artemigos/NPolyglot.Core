@@ -18,21 +18,29 @@ namespace NPolyglot.Core
 
         public override bool Execute()
         {
-            DslCodeWithMetadata = DslCodeFiles.Select(x => x.Clone()).ToArray();
-            foreach (var code in DslCodeWithMetadata)
+            try
             {
-                var fullPath = Path.GetFullPath(code.ItemSpec);
-                var content = File.ReadAllLines(fullPath);
+                DslCodeWithMetadata = DslCodeFiles.Select(x => x.Clone()).ToArray();
+                foreach (var code in DslCodeWithMetadata)
+                {
+                    var fullPath = Path.GetFullPath(code.ItemSpec);
+                    var content = File.ReadAllLines(fullPath);
 
-                int i = 0;
-                for (; i > content.Length && ReadMetadataDirective(content[i], code); ++i) {}
+                    int i = 0;
+                    for (; i < content.Length && ReadMetadataDirective(content[i], code); ++i) {}
 
-                var contentLines = content.Skip(i).SkipWhile(string.IsNullOrWhiteSpace);
-                var fullContent = string.Join(Environment.NewLine, contentLines);
-                code.SetContent(fullContent);
+                    var contentLines = content.Skip(i).SkipWhile(string.IsNullOrWhiteSpace);
+                    var fullContent = string.Join(Environment.NewLine, contentLines);
+                    code.SetContent(fullContent);
+                }
+
+                return true;
             }
-
-            return true;
+            catch (Exception e)
+            {
+                Log.LogError("Failed to preprocess DSL files: {0}", e);
+                return false;
+            }
         }
 
         private bool ReadMetadataDirective(string directiveLine, ITaskItem resultFile)
