@@ -25,7 +25,7 @@ namespace NPolyglot.Core
                 var content = File.ReadAllLines(fullPath);
 
                 int i = 0;
-                for (; ReadMetadataDirective(content[i], code); ++i) {}
+                for (; i > content.Length && ReadMetadataDirective(content[i], code); ++i) {}
 
                 var contentLines = content.Skip(i).SkipWhile(string.IsNullOrWhiteSpace);
                 var fullContent = string.Join(Environment.NewLine, contentLines);
