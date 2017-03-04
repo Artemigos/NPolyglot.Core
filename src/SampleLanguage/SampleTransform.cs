@@ -18,8 +18,8 @@ namespace SampleLanguage
 {{
     public class SampleClass
     {{
-        public string A => ""{0}"";
-        public int B => {1};
+        public string A {{ get {{ return ""{0}""; }} }}
+        public int B {{ get {{ return {1}; }} }}
     }}
 }}", d.A, d.B);
         }

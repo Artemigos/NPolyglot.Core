@@ -41,7 +41,7 @@
     </ItemGroup>
 
     <ParseWithCompiledParsers
-      Condition="@(_ParsersDlls -> Count()) > 0"
+      Condition="'@(_ParsersDlls->Count())' > 0"
       ParsersDlls="@(_ParsersDlls)"
       DslCodeFiles="@(_PreprocessedDslCode)">
       <Output TaskParameter="DslCodeWithMetadata" ItemName="_ParsedDslCode" />
@@ -55,7 +55,7 @@
     </ItemGroup>
 
     <TransformWithCompiledTransforms
-      Condition="@(_TransformsDlls -> Count()) > 0"
+      Condition="'@(_TransformsDlls->Count())' > 0"
       TransformsDlls="@(_TransformsDlls)"
       ParsedFiles="@(_ParsedDslCode)"
       OutputDir="$(DslCodePath)">
