@@ -42,12 +42,12 @@ namespace NPolyglot.Core
                 var parserTypes =
                     from a in assemblies
                     from t in a.GetTypes()
-                    where IsValidParser(t)
+                    where t.IsParser()
                     select t;
 
                 var parsers = parserTypes
-                    .Select(x => GetDefaultConstructor(x).Invoke(new object[0]))
-                    .Cast<ICodedParser>()
+                    .Select(x => x.GetDefaultConstructor().Invoke(new object[0]))
+                    .Select(x => (ICodedParser)new ReflectionBasedParserWrapper(x))
                     .ToDictionary(x => x.ExportName, x => x);
 
                 Log.LogMessage(MessageImportance.Low, "Found parsers: {0}", string.Join(", ", parsers.Select(x => x.Key)));
@@ -75,30 +75,6 @@ namespace NPolyglot.Core
                 return false;
             }
         }
-
-        private bool IsValidParser(Type t)
-        {
-            if (!ImplementsCodedParser(t))
-            {
-                Log.LogMessage(MessageImportance.Low, "Validating whether '{0}' is a parser - doesn't implement parser interface", t.ToString());
-                return false;
-            }
-
-            if (GetDefaultConstructor(t) == null)
-            {
-                Log.LogMessage(MessageImportance.Low, "Validating whether '{0}' is a parser - doesn't have a default constructor", t.ToString());
-                return false;
-            }
-
-            Log.LogMessage(MessageImportance.Low, "Found that '{0}' is a valid parser", t.ToString());
-            return true;
-        }
-
-        private ConstructorInfo GetDefaultConstructor(Type t) =>
-            t.GetConstructor(new Type[0]);
-
-        private bool ImplementsCodedParser(Type t) =>
-            t.GetInterfaces().Contains(typeof(ICodedParser));
 
         private bool IsFileValidForParsing(ITaskItem item) =>
             item.MetadataNames.Cast<string>().Contains(MetadataNames.Parser) &&

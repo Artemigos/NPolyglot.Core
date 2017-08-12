@@ -45,12 +45,12 @@ namespace NPolyglot.Core
                 var transformTypes =
                     from a in assemblies
                     from t in a.GetTypes()
-                    where IsValidTransform(t)
+                    where t.IsTransform()
                     select t;
 
                 var transforms = transformTypes
-                    .Select(x => GetDefaultConstructor(x).Invoke(new object[0]))
-                    .Cast<ICodedTransform>()
+                    .Select(x => x.GetDefaultConstructor().Invoke(new object[0]))
+                    .Select(x => (ICodedTransform)new ReflectionBasedTransformWrapper(x))
                     .ToDictionary(x => x.ExportName, x => x);
 
                 Log.LogMessage(MessageImportance.Low, "Found tarnsforms: {0}", string.Join(", ", transforms.Select(x => x.Key)));
@@ -84,15 +84,6 @@ namespace NPolyglot.Core
                 return false;
             }
         }
-
-        private bool IsValidTransform(Type t) =>
-            ImplementsCodedTransform(t) && GetDefaultConstructor(t) != null;
-
-        private ConstructorInfo GetDefaultConstructor(Type t) =>
-            t.GetConstructor(new Type[0]);
-
-        private bool ImplementsCodedTransform(Type t) =>
-            t.GetInterfaces().Contains(typeof(ICodedTransform));
 
         private bool IsFileValidForTransform(ITaskItem item) =>
             item.MetadataNames.Cast<string>().Contains(MetadataNames.Object) &&

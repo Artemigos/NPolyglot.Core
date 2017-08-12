@@ -46,10 +46,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ConventionReflection.cs" />
     <Compile Include="DslCodeFileExtensions.cs" />
     <Compile Include="ICodedTransform.cs" />
     <Compile Include="MetadataNames.cs" />
     <Compile Include="ICodedParser.cs" />
+    <Compile Include="ReflectionBasedParserWrapper.cs" />
+    <Compile Include="ReflectionBasedTransformWrapper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
