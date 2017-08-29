@@ -20,18 +20,27 @@ namespace NPolyglot.Core
         {
             try
             {
+                var reader = new MetadataReader();
                 DslCodeWithMetadata = DslCodeFiles.Select(x => x.Clone()).ToArray();
+
                 foreach (var code in DslCodeWithMetadata)
                 {
                     var fullPath = Path.GetFullPath(code.ItemSpec);
-                    var content = File.ReadAllLines(fullPath);
+                    var content = File.ReadAllText(fullPath);
 
-                    int i = 0;
-                    for (; i < content.Length && ReadMetadataDirective(content[i], code); ++i) {}
+                    var result = reader.ReadMetadata(content, out var codeContent);
 
-                    var contentLines = content.Skip(i).SkipWhile(string.IsNullOrWhiteSpace);
-                    var fullContent = string.Join(Environment.NewLine, contentLines);
-                    code.SetContent(fullContent);
+                    if (result.HasParser)
+                    {
+                        code.SetParser(result.Parser);
+                    }
+
+                    if (result.HasTransform)
+                    {
+                        code.SetTemplate(result.Transform);
+                    }
+
+                    code.SetContent(codeContent);
                 }
 
                 return true;
@@ -41,35 +50,6 @@ namespace NPolyglot.Core
                 Log.LogError("Failed to preprocess DSL files: {0}", e);
                 return false;
             }
-        }
-
-        private bool ReadMetadataDirective(string directiveLine, ITaskItem resultFile)
-        {
-            const string parserDirective = "parser";
-            const string templateDirective = "template";
-
-            var line = directiveLine.Trim();
-            var directiveRegex = $@"@({parserDirective}|{templateDirective}) +[~ ]*";
-            if (!Regex.IsMatch(line, directiveRegex))
-            {
-                return false;
-            }
-
-            var segments = line.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-            if (segments[0] == $"@{parserDirective}")
-            {
-                resultFile.SetParser(segments[1]);
-                return true;
-            }
-
-            if (segments[0] == $"@{templateDirective}")
-            {
-                resultFile.SetTemplate(segments[1]);
-                return true;
-            }
-
-            Log.LogWarning("Unknown directive '{0}'.", segments[0]);
-            return true;
         }
     }
 }
