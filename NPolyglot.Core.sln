@@ -15,7 +15,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProjectForTesting", "src\Pr
 		{F815FFDC-ECDB-44C4-86E6-523011F1496F} = {F815FFDC-ECDB-44C4-86E6-523011F1496F}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NPolyglot.Injector", "NPolyglot.Injector\NPolyglot.Injector.csproj", "{E1716602-7FED-459E-A634-B49758055375}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NPolyglot.Injector", "src\NPolyglot.Injector\NPolyglot.Injector.csproj", "{E1716602-7FED-459E-A634-B49758055375}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
