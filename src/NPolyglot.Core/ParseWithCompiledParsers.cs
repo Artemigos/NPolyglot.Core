@@ -11,7 +11,7 @@ using NPolyglot.LanguageDesign;
 
 namespace NPolyglot.Core
 {
-    public class ParseWithCompiledParsers : AppDomainIsolatedTask
+    public class ParseWithCompiledParsers : NPolyglotBaseTask
     {
         [Required]
         public ITaskItem[] ParsersDlls { get; set; }
@@ -22,79 +22,48 @@ namespace NPolyglot.Core
         [Output]
         public ITaskItem[] DslCodeWithMetadata { get; set; }
 
-        public override bool Execute()
+        protected override string TaskName => nameof(ParseWithCompiledParsers);
+
+        protected override bool ExecuteInternal()
         {
-            try
+            Log.LogMessage(MessageImportance.Low, "Starting task");
+            Log.LogMessage(MessageImportance.Low, "Assemblies to load: {0}", string.Join("; ", ParsersDlls.Select(x => Path.GetFullPath(x.ItemSpec))));
+
+            var assemblies =
+                from dll in ParsersDlls
+                let path = Path.GetFullPath(dll.ItemSpec)
+                select Assembly.LoadFile(path);
+
+            Log.LogMessage(MessageImportance.Low, "Loaded assemblies");
+            Log.LogMessage(MessageImportance.Low, "Parser candidates: {0}", string.Join(", ", assemblies.SelectMany(x => x.GetTypes())));
+
+            var parserTypes = assemblies.SelectMany(x => x.FindParserTypes());
+            var parsers = parserTypes
+                .Select(x => x.CreateParser())
+                .ToDictionary(x => x.ExportName, x => x);
+
+            Log.LogMessage(MessageImportance.Low, "Found parsers: {0}", string.Join(", ", parsers.Select(x => x.Key)));
+
+            DslCodeWithMetadata = DslCodeFiles.Select(x => new TaskItem(x)).ToArray();
+            foreach (var file in DslCodeWithMetadata.Where(IsFileValidForParsing))
             {
-                Log.LogMessage(MessageImportance.Low, "Starting task");
-                Log.LogMessage(MessageImportance.Low, "Assemblies to load: {0}", string.Join("; ", ParsersDlls.Select(x => Path.GetFullPath(x.ItemSpec))));
-
-                AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
-
-                var assemblies =
-                    from dll in ParsersDlls
-                    let path = Path.GetFullPath(dll.ItemSpec)
-                    select Assembly.LoadFile(path);
-
-                Log.LogMessage(MessageImportance.Low, "Loaded assemblies");
-                Log.LogMessage(MessageImportance.Low, "Parser candidates: {0}", string.Join(", ", assemblies.SelectMany(x => x.GetTypes())));
-
-                var parserTypes = assemblies.SelectMany(x => x.FindParserTypes());
-                var parsers = parserTypes
-                    .Select(x => x.CreateParser())
-                    .ToDictionary(x => x.ExportName, x => x);
-
-                Log.LogMessage(MessageImportance.Low, "Found parsers: {0}", string.Join(", ", parsers.Select(x => x.Key)));
-
-                DslCodeWithMetadata = DslCodeFiles.Select(x => new TaskItem(x)).ToArray();
-                foreach (var file in DslCodeWithMetadata.Where(IsFileValidForParsing))
+                var parserName = file.GetParser();
+                ICodedParser parser;
+                if (!parsers.TryGetValue(parserName, out parser))
                 {
-                    var parserName = file.GetParser();
-                    ICodedParser parser;
-                    if (!parsers.TryGetValue(parserName, out parser))
-                    {
-                        continue;
-                    }
-
-                    var content = file.GetContent();
-                    var result = parser.Parse(content);
-                    file.SetObject(result);
+                    continue;
                 }
 
-                return true;
+                var content = file.GetContent();
+                var result = parser.Parse(content);
+                file.SetObject(result);
             }
-            catch (Exception e)
-            {
-                Log.LogError("Failed to parse DSL files: {0}", e);
-                return false;
-            }
+
+            return true;
         }
 
         private bool IsFileValidForParsing(ITaskItem item) =>
             item.MetadataNames.Cast<string>().Contains(MetadataNames.Parser) &&
             item.MetadataNames.Cast<string>().Contains(MetadataNames.Content);
-
-        private Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
-        {
-            var alreadyLoaded = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(x => x.FullName == args.Name);
-            if (alreadyLoaded != null)
-            {
-                return alreadyLoaded;
-            }
-
-            var name = args.Name.Split(',')[0];
-            var path = Path.GetDirectoryName(args.RequestingAssembly.Location);
-            var assemblies = Directory.GetFiles(path, $"{name}.dll");
-            var found = assemblies.FirstOrDefault();
-
-            if (found == null)
-            {
-                Log.LogMessage(MessageImportance.Low, "Failed to find assembly '{0}' for '{1}'", args.Name, args.RequestingAssembly.FullName);
-                return Assembly.Load(args.Name);
-            }
-
-            Log.LogMessage(MessageImportance.Low, "Found assembly '{0}' for '{1}'", found, args.RequestingAssembly.FullName);
-            return Assembly.LoadFile(found);
-        }
     }
 }

@@ -42,7 +42,7 @@ namespace NPolyglot.Core
         {
             parsers = new Dictionary<string, ICodedParser>();
             transforms = new Dictionary<string, ICodedTransform>();
-            
+
             foreach (var t in assembly.GetTypes())
             {
                 if (t.IsParser())

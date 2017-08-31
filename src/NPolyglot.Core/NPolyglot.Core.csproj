@@ -47,6 +47,7 @@
     <Compile Include="ClassFinder.cs" />
     <Compile Include="MetadataEntries.cs" />
     <Compile Include="MetadataReader.cs" />
+    <Compile Include="NPolyglotBaseTask.cs" />
     <Compile Include="PreprocessDslCode.cs" />
     <Compile Include="ParseWithCompiledParsers.cs" />
     <Compile Include="TransformWithCompiledTransforms.cs" />
