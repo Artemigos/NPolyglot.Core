@@ -43,6 +43,8 @@
     <Compile Include="SampleParser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SampleTransform.cs" />
+    <Compile Include="SubstSampleParser.cs" />
+    <Compile Include="SubstSampleTransform.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NPolyglot.LanguageDesign\NPolyglot.LanguageDesign.csproj">

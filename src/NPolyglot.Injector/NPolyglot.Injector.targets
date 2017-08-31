@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <UsingTask AssemblyFile="$(NPolyglotInjectorDll)" TaskName="ProcessDSLsInCodebase" />
+
+  <PropertyGroup>
+    <InjectorOutPath>$(DslOutPath)injected_code\</InjectorOutPath>
+  </PropertyGroup>
+
+  <Target Name="ProcessCodebase" AfterTargets="ProcessDSLs" BeforeTargets="CoreCompile">
+    <MakeDir Directories="$(InjectorOutPath)" />
+    <ProcessDSLsInCodebase
+      ParsersDlls="@(_ParsersDlls)"
+      TransformsDlls="@(_TransformsDlls)"
+      CodeFiles="@(Compile)"
+      OutputDir="$(InjectorOutPath)">
+      <Output TaskParameter="GeneratedOutput" ItemName="Compile" />
+      <Output TaskParameter="SubstitutedItems" ItemName="_ObsoleteCompile" />
+    </ProcessDSLsInCodebase>
+
+    <ItemGroup>
+      <Compile Remove="@(_ObsoleteCompile)" />
+    </ItemGroup>
+  </Target>
+</Project>

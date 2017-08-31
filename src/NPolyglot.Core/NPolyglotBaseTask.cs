@@ -19,7 +19,7 @@ namespace NPolyglot.Core
             }
             catch (Exception e)
             {
-                Log.LogError("Failed to execute task '{0}': ", TaskName, e);
+                Log.LogError("Failed to execute task '{0}': {1}", TaskName, e);
                 return false;
             }
         }

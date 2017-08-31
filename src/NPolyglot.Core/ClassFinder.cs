@@ -36,14 +36,14 @@ namespace NPolyglot.Core
                 .ToDictionary(x => x.ExportName, x => x);
 
         public static void FindParsersAndTransforms(
-            this Assembly assembly,
+            this IEnumerable<Type> types,
             out IDictionary<string, ICodedParser> parsers,
             out IDictionary<string, ICodedTransform> transforms)
         {
             parsers = new Dictionary<string, ICodedParser>();
             transforms = new Dictionary<string, ICodedTransform>();
 
-            foreach (var t in assembly.GetTypes())
+            foreach (var t in types)
             {
                 if (t.IsParser())
                 {

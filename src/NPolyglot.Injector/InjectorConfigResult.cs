@@ -11,7 +11,7 @@ namespace NPolyglot.Injector
         public static InjectorConfigResult Incorrect(string error) =>
             new InjectorConfigResult(InjectorConfigResultType.IncorrectConfig, null, null, error);
 
-        public static InjectorConfigResult DontInject =
+        public static readonly InjectorConfigResult DontInject =
             new InjectorConfigResult(InjectorConfigResultType.DontInject, null, null, null);
 
         public static InjectorConfigResult Inject(string parser, string transform) =>

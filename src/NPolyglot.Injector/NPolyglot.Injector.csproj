@@ -126,7 +126,10 @@
   <ItemGroup>
     <Compile Include="DirectiveData.cs" />
     <Compile Include="IfPreprocSubstitutor.cs" />
+    <Compile Include="InjectorConfigReader.cs" />
+    <Compile Include="InjectorConfigResult.cs" />
     <Compile Include="InjectorConfigResultType.cs" />
+    <Compile Include="ProcessDSLsInCodebase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SubstitutionDecision.cs" />
   </ItemGroup>
@@ -134,5 +137,24 @@
     <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\NPolyglot.Core\NPolyglot.Core.csproj">
+      <Project>{f815ffdc-ecdb-44c4-86e6-523011f1496f}</Project>
+      <Name>NPolyglot.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\NPolyglot.LanguageDesign\NPolyglot.LanguageDesign.csproj">
+      <Project>{3A725E8E-F373-492C-9A90-9F8CD962E13A}</Project>
+      <Name>NPolyglot.LanguageDesign</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="NPolyglot.Injector.targets">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="NPolyglot.Injector.props">
+      <SubType>Designer</SubType>
+    </None>
+  </ItemGroup>
+
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

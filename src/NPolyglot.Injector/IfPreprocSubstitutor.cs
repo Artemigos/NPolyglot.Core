@@ -18,10 +18,12 @@ namespace NPolyglot.Injector
             {
                 var token = i.Token;
                 var directive = i.GetStructure() as IfDirectiveTriviaSyntax;
-                var end = directive.GetRelatedDirectives().Last();
+                var related = directive.GetRelatedDirectives();
+                var end = related.Last();
+                var delimiter = related[1];
 
                 var condition = directive.Condition.ToFullString().Trim();
-                var currentContent = result.Substring(i.Span.End, end.SpanStart - i.Span.End);
+                var currentContent = result.Substring(i.Span.End, delimiter.SpanStart - i.Span.End);
                 var decision = decider(new DirectiveData(condition, currentContent));
 
                 if (decision.ShouldSubstitute)
