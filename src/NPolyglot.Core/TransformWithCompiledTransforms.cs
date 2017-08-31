@@ -42,15 +42,9 @@ namespace NPolyglot.Core
                 Log.LogMessage(MessageImportance.Low, "Loaded assemblies");
                 Log.LogMessage(MessageImportance.Low, "Transform candidates: {0}", string.Join(", ", assemblies.SelectMany(x => x.GetTypes())));
 
-                var transformTypes =
-                    from a in assemblies
-                    from t in a.GetTypes()
-                    where t.IsTransform()
-                    select t;
-
+                var transformTypes = assemblies.SelectMany(x => x.FindTransformTypes());
                 var transforms = transformTypes
-                    .Select(x => x.GetDefaultConstructor().Invoke(new object[0]))
-                    .Select(x => (ICodedTransform)new ReflectionBasedTransformWrapper(x))
+                    .Select(x => x.CreateTransform())
                     .ToDictionary(x => x.ExportName, x => x);
 
                 Log.LogMessage(MessageImportance.Low, "Found tarnsforms: {0}", string.Join(", ", transforms.Select(x => x.Key)));
