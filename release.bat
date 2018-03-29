@@ -17,4 +17,3 @@ ECHO Releasing the application with version %ver_joined%
 
 msbuild /p:Configuration=Release /p:AssemblyVersion=%param_ver% /p:AssemblyVersionSuffix=%param_label%
 nuget pack build/NPolyglot.Core.nuspec -properties configuration=Release;version=%ver_joined% -output build/
-nuget pack build/NPolyglot.LanguageDesign.nuspec -properties configuration=Release;version=%ver_joined% -output build/

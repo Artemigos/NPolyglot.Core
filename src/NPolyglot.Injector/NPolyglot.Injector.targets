@@ -3,22 +3,21 @@
   <UsingTask AssemblyFile="$(NPolyglotInjectorDll)" TaskName="ProcessDSLsInCodebase" />
 
   <PropertyGroup>
-    <InjectorOutPath>$(DslOutPath)injected_code\</InjectorOutPath>
+    <InjectorOutPath>$(TransformOutputDir)injected_code\</InjectorOutPath>
   </PropertyGroup>
 
-  <Target Name="ProcessCodebase" AfterTargets="ProcessDSLs" BeforeTargets="CoreCompile">
+  <Target Name="ProcessCodebase" BeforeTargets="CoreCompile">
     <MakeDir Directories="$(InjectorOutPath)" />
     <ProcessDSLsInCodebase
-      ParsersDlls="@(_ParsersDlls)"
-      TransformsDlls="@(_TransformsDlls)"
+      Injectors="@(Injector)"
       CodeFiles="@(Compile)"
       OutputDir="$(InjectorOutPath)">
       <Output TaskParameter="GeneratedOutput" ItemName="Compile" />
-      <Output TaskParameter="SubstitutedItems" ItemName="_ObsoleteCompile" />
+      <Output TaskParameter="SubstitutedItems" ItemName="_SubstitutedCompile" />
     </ProcessDSLsInCodebase>
 
     <ItemGroup>
-      <Compile Remove="@(_ObsoleteCompile)" />
+      <Compile Remove="@(_SubstitutedCompile)" />
     </ItemGroup>
   </Target>
 </Project>

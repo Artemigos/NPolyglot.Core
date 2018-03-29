@@ -13,7 +13,7 @@ namespace NPolyglot.Injector
             var parts = config
                 .Split(new[] { "||" }, StringSplitOptions.RemoveEmptyEntries)
                 .Select(x => x.Trim())
-                .Where(x => x.ToUpperInvariant() != "TRUE")
+                .Where(x => x.ToUpperInvariant() != "TRUE") // might be useful when we want to rewrite actual valid code
                 .ToArray();
 
             if (parts.Length == 0 || parts[0] != "INJECT_DSL")
@@ -23,14 +23,7 @@ namespace NPolyglot.Injector
 
             if (parts.Length == 2)
             {
-                return InjectorConfigResult.Inject(
-                    parts[1] + "Parser",
-                    parts[1] + "Transform");
-            }
-
-            if (parts.Length == 3)
-            {
-                return InjectorConfigResult.Inject(parts[1], parts[2]);
+                return InjectorConfigResult.Inject(parts[1]);
             }
 
             return InjectorConfigResult.Incorrect("Incorrect number of injection configuration elements.");

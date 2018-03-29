@@ -1,15 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SampleLanguage
+﻿namespace SampleLanguage
 {
-    public class SampleTransform : NPolyglot.LanguageDesign.ICodedTransform
+    public class SampleTransform
     {
-        public string ExportName => nameof(SampleTransform);
-
         public string Transform(object data)
         {
             dynamic d = data;

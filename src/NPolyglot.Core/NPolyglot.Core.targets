@@ -1,95 +1,26 @@
-﻿<?xml version="1.0"?>
-<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <UsingTask AssemblyFile="$(NPolyglotCoreDll)" TaskName="PreprocessDslCode" />
-  <UsingTask AssemblyFile="$(NPolyglotCoreDll)" TaskName="ParseWithCompiledParsers" />
-  <UsingTask AssemblyFile="$(NPolyglotCoreDll)" TaskName="TransformWithCompiledTransforms" />
+﻿<Project>
 
   <PropertyGroup>
-    <DslOutPath>$(IntermediateOutputPath)_npolyglot\</DslOutPath>
-    <DslCodePath>$(DslOutPath)code\</DslCodePath>
-    <CodedParsersDll>$(DslOutPath)_parsers.dll</CodedParsersDll>
-    <CodedTransformsDll>$(DslOutPath)_transforms.dll</CodedTransformsDll>
+    <TransformOutputDir>$(IntermediateOutputPath)_npolyglot/</TransformOutputDir>
   </PropertyGroup>
 
-  <ItemGroup>
-    <AvailableItemName Include="DslCode" />
-    <AvailableItemName Include="CodedParser" />
-    <AvailableItemName Include="CodedTransform" />
-  </ItemGroup>
   <ItemDefinitionGroup>
-    <DslCode>
+    <Transform>
       <Generator>MSBuild:Compile</Generator>
-    </DslCode>
+      <OutputFile>$(TransformOutputDir)%(Identity).cs</OutputFile>
+    </Transform>
   </ItemDefinitionGroup>
 
-  <Target Name="ProcessDSLs" BeforeTargets="CoreCompile">
-    <MakeDir Directories="$(DslOutPath)" />
-    <MakeDir Directories="$(DslCodePath)" />
-    <CallTarget Targets="PreprocessDslCode;Parse;Transform" />
-  </Target>
+  <Target Name="Transform" BeforeTargets="CoreCompile" Inputs="%(Transform.Identity)" Outputs="@(Transform->'%(OutputFile)')">
+    <Message Importance="high" Text="Running transform for @(Transform)" />
 
-  <Target Name="Parse" DependsOnTargets="$(ParseDependsOn)">
-  </Target>
+    <MakeDir Directories="$([System.IO.Path]::GetDirectoryName('%(Transform.OutputFile)'))" />
+    <Exec Command="%(Transform.TransformationCommand)" />
 
-  <Target Name="Transform" DependsOnTargets="$(TransformDependsOn)">
-  </Target>
-
-  <Target Name="RunParsers">
     <ItemGroup>
-      <_ParsersDlls Include="@(DslLanguageReference)" />
-      <_ParsersDlls Include="$(CodedParsersDll)" Condition="Exists('$(CodedParsersDll)')" />
+      <Compile Include="%(Transform.OutputFile)" />
+      <FileWrites Include="%(Transform.OutputFile)" />
     </ItemGroup>
-
-    <ParseWithCompiledParsers
-      Condition="'@(_ParsersDlls->Count())' > 0"
-      ParsersDlls="@(_ParsersDlls)"
-      DslCodeFiles="@(_PreprocessedDslCode)">
-      <Output TaskParameter="DslCodeWithMetadata" ItemName="_ParsedDslCode" />
-    </ParseWithCompiledParsers>
   </Target>
 
-  <Target Name="RunTransforms">
-    <ItemGroup>
-      <_TransformsDlls Include="@(DslLanguageReference)" />
-      <_TransformsDlls Include="$(CodedTransformsDll)" Condition="Exists('$(CodedTransformsDll)')" />
-    </ItemGroup>
-
-    <TransformWithCompiledTransforms
-      Condition="'@(_TransformsDlls->Count())' > 0"
-      TransformsDlls="@(_TransformsDlls)"
-      ParsedFiles="@(_ParsedDslCode)"
-      OutputDir="$(DslCodePath)">
-      <Output TaskParameter="GeneratedOutput" ItemName="Compile" />
-    </TransformWithCompiledTransforms>
-  </Target>
-
-  <Target
-    Name="CompileCodedParsers"
-    Inputs="@(CodedParser);@(CodedParsersReference)"
-    Outputs="$(CodedParsersDll)">
-    <Csc
-      Sources="@(CodedParser)"
-      OutputAssembly="$(CodedParsersDll)"
-      TargetType="library"
-      References="$(NPolyglotLanguageDesignDll);@(CodedParsersReference)"
-      WarningLevel="1" />
-  </Target>
-
-  <Target
-    Name="CompileCodedTransforms"
-    Inputs="@(CodedTransform);@(CodedTransformsReference)"
-    Outputs="$(CodedTransformsDll)">
-    <Csc
-      Sources="@(CodedTransform)"
-      OutputAssembly="$(CodedTransformsDll)"
-      TargetType="library"
-      References="$(NPolyglotLanguageDesignDll);@(CodedTransformsReference)"
-      WarningLevel="1" />
-  </Target>
-
-  <Target Name="PreprocessDslCode">
-    <PreprocessDslCode DslCodeFiles="@(DslCode)">
-      <Output TaskParameter="DslCodeWithMetadata" ItemName="_PreprocessedDslCode" />
-    </PreprocessDslCode>
-  </Target>
 </Project>

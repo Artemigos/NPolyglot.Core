@@ -1,12 +1,9 @@
 ﻿using System.Text;
-using NPolyglot.LanguageDesign;
 
 namespace SampleLanguage
 {
-    public class SubstSampleTransform : ICodedTransform
+    public class SubstSampleTransform
     {
-        public string ExportName => nameof(SubstSampleTransform);
-
         public string Transform(object data)
         {
             var words = (string[])data;

@@ -1,35 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace NPolyglot.Injector
+﻿namespace NPolyglot.Injector
 {
     public class InjectorConfigResult
     {
         public static InjectorConfigResult Incorrect(string error) =>
-            new InjectorConfigResult(InjectorConfigResultType.IncorrectConfig, null, null, error);
+            new InjectorConfigResult(InjectorConfigResultType.IncorrectConfig, null, error);
 
         public static readonly InjectorConfigResult DontInject =
-            new InjectorConfigResult(InjectorConfigResultType.DontInject, null, null, null);
+            new InjectorConfigResult(InjectorConfigResultType.DontInject, null, null);
 
-        public static InjectorConfigResult Inject(string parser, string transform) =>
-            new InjectorConfigResult(InjectorConfigResultType.Inject, parser, transform, null);
+        public static InjectorConfigResult Inject(string injectorName) =>
+            new InjectorConfigResult(InjectorConfigResultType.Inject, injectorName, null);
 
-        private InjectorConfigResult(InjectorConfigResultType type, string parser, string transform, string error)
+        private InjectorConfigResult(InjectorConfigResultType type, string injectorName, string error)
         {
             Type = type;
-            Parser = parser;
-            Transform = transform;
+            InjectorName = injectorName;
             Error = error;
         }
 
         public InjectorConfigResultType Type { get; }
 
-        public string Parser { get; }
-
-        public string Transform { get; }
+        public string InjectorName { get; }
 
         public string Error { get; }
     }

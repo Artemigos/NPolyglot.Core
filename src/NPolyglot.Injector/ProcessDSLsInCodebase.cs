@@ -1,29 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
 using Microsoft.CodeAnalysis.CSharp;
-using NPolyglot.Core;
-using NPolyglot.LanguageDesign;
 
 namespace NPolyglot.Injector
 {
-    public class ProcessDSLsInCodebase : NPolyglotBaseTask
+    public class ProcessDSLsInCodebase : Task
     {
         private InjectorConfigReader _configReader;
 
-        private IDictionary<string, ICodedParser> _parsers;
-
-        private IDictionary<string, ICodedTransform> _transforms;
+        private IDictionary<string, string> _injectors;
 
         [Required]
-        public ITaskItem[] ParsersDlls { get; set; }
-
-        [Required]
-        public ITaskItem[] TransformsDlls { get; set; }
+        public ITaskItem[] Injectors { get; set; }
 
         [Required]
         public ITaskItem[] CodeFiles { get; set; }
@@ -37,9 +32,22 @@ namespace NPolyglot.Injector
         [Output]
         public ITaskItem[] SubstitutedItems { get; set; }
 
-        protected override string TaskName => nameof(ProcessDSLsInCodebase);
+        public string TaskName => nameof(ProcessDSLsInCodebase);
 
-        protected override bool ExecuteInternal()
+        public override bool Execute()
+        {
+            try
+            {
+                return ExecuteInternal();
+            }
+            catch (Exception e)
+            {
+                Log.LogError($"Failed to execute task '{TaskName}': {e}");
+                throw;
+            }
+        }
+
+        private bool ExecuteInternal()
         {
             Initialize();
 
@@ -86,40 +94,58 @@ namespace NPolyglot.Injector
                 return SubstitutionDecision.DoNotSubstitute;
             }
 
-            var result = ParseDsl(data.Content, config.Parser, config.Transform);
+            var result = TransformContent(data.Content, config.InjectorName);
             return SubstitutionDecision.Substitute(result);
         }
 
-        private string ParseDsl(string content, string parserKey, string transformKey)
+        private string TransformContent(string content, string injectorName)
         {
-            if (!_parsers.TryGetValue(parserKey, out var parser))
+            if (!_injectors.TryGetValue(injectorName, out var command))
             {
-                throw new ArgumentOutOfRangeException(nameof(parserKey), "Could not find parser: " + parserKey);
+                throw new ArgumentOutOfRangeException(nameof(injectorName), "Could not find injector: " + injectorName);
             }
 
-            if (!_transforms.TryGetValue(transformKey, out var transform))
+            var success = RunCommand(command, content, out var output);
+
+            if (!success)
             {
-                throw new ArgumentOutOfRangeException(nameof(transformKey), "Could not find transform: " + transformKey);
+                throw new Exception("Failed to transform DSL into code.");
             }
 
-            var obj = parser.Parse(content);
-            var newContent = transform.Transform(obj);
-            return newContent;
+            return output;
+        }
+
+        private bool RunCommand(string command, string input, out string output)
+        {
+            var proc = new Process();
+            var result = new StringBuilder();
+            proc.OutputDataReceived += (sender, args) => result.Append(args.Data);
+            proc.ErrorDataReceived += (sender, args) => Log.LogError(args.Data);
+            proc.StartInfo = new ProcessStartInfo()
+            {
+                UseShellExecute = true,
+                RedirectStandardError = true,
+                RedirectStandardInput = true,
+                RedirectStandardOutput = true,
+                FileName = "cmd.exe",
+                Arguments = "/C " + command,
+                CreateNoWindow = true
+            };
+
+            proc.Start();
+            proc.StandardInput.Write(input);
+            proc.WaitForExit();
+
+            output = result.ToString();
+            return proc.ExitCode == 0;
         }
 
         private void Initialize()
         {
             _configReader = new InjectorConfigReader();
-
-            var assemblies = ParsersDlls
-                .Union(TransformsDlls)
-                .Select(dll => Path.GetFullPath(dll.ItemSpec))
-                .Distinct()
-                .Select(Assembly.LoadFile);
-
-            assemblies
-                .SelectMany(x => x.GetTypes())
-                .FindParsersAndTransforms(out _parsers, out _transforms);
+            _injectors = Injectors.ToDictionary(
+                i => i.ItemSpec,
+                i => i.GetMetadata("Command"));
         }
     }
 }
