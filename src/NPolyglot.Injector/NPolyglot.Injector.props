@@ -8,7 +8,7 @@
     </When>
     <Otherwise>
       <PropertyGroup>
-        <NPolyglotInjectorDir>$(MSBuildThisFileDirectory)bin\$(Configuration)\</NPolyglotInjectorDir>
+        <NPolyglotInjectorDir>$(MSBuildThisFileDirectory)bin\Debug\netstandard1.3\publish\</NPolyglotInjectorDir>
       </PropertyGroup>
     </Otherwise>
   </Choose>

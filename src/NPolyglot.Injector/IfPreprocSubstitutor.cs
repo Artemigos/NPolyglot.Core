@@ -1,38 +1,43 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
+using System.Text.RegularExpressions;
 
 namespace NPolyglot.Injector
 {
     public class IfPreprocSubstitutor
     {
-        public string Substitute(SyntaxNode node, Func<DirectiveData, SubstitutionDecision> decider)
+        public string Substitute(string node, Func<DirectiveData, SubstitutionDecision> decider)
         {
-            var result = node.ToFullString();
-
-            var ifs = node.DescendantTrivia().Where(x => x.HasStructure && x.GetStructure() is IfDirectiveTriviaSyntax).ToList();
+            var result = node;
+            var ifs = FindIfs(node);
             ifs.Reverse();
 
             foreach (var i in ifs)
             {
-                var token = i.Token;
-                var directive = i.GetStructure() as IfDirectiveTriviaSyntax;
-                var related = directive.GetRelatedDirectives();
-                var end = related.Last();
-                var delimiter = related[1];
-
-                var condition = directive.Condition.ToFullString().Trim();
-                var currentContent = result.Substring(i.Span.End, delimiter.SpanStart - i.Span.End);
-                var decision = decider(new DirectiveData(condition, currentContent));
+                var decision = decider(new DirectiveData(i.condition, i.content));
 
                 if (decision.ShouldSubstitute)
                 {
-                    result = Splice(result, i.SpanStart, end.Span.End - 1, decision.NewContent);
+                    result = Splice(result, i.start, i.end - 1, decision.NewContent);
                 }
             }
 
             return result;
+        }
+
+        private IEnumerable<(int start, int end, string condition, string content)> FindIfs(string code)
+        {
+            const string re = @"[\r\n]\s*(#if\s+(\S.*?)[\r\n](.*?)([\r\n]\s*#else\s*[\r\n].*?)?[\r\n]\s*#endif)\s*[\r\n]";
+            var matches = Regex.Matches(code, re, RegexOptions.Singleline);
+
+            foreach (Match m in matches)
+            {
+                Group entire = m.Groups[1];
+                Group cond = m.Groups[2];
+                Group val = m.Groups[3];
+                yield return (entire.Index, entire.Index + entire.Length, cond.Value, val.Value);
+            }
         }
 
         private string Splice(string source, int startPos, int endPos, string newVal)

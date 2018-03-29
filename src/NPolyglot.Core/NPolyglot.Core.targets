@@ -11,7 +11,12 @@
     </Transform>
   </ItemDefinitionGroup>
 
-  <Target Name="Transform" BeforeTargets="CoreCompile" Inputs="%(Transform.Identity)" Outputs="@(Transform->'%(OutputFile)')">
+  <Target
+    Name="Transform"
+    BeforeTargets="CoreCompile"
+    Condition="'@(Transform)'!=''"
+    Inputs="%(Transform.Identity)"
+    Outputs="@(Transform->'%(OutputFile)')">
     <Message Importance="high" Text="Running transform for @(Transform)" />
 
     <MakeDir Directories="$([System.IO.Path]::GetDirectoryName('%(Transform.OutputFile)'))" />

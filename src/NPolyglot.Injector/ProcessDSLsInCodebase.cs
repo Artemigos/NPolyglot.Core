@@ -7,7 +7,6 @@ using System.Reflection;
 using System.Text;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
-using Microsoft.CodeAnalysis.CSharp;
 
 namespace NPolyglot.Injector
 {
@@ -59,8 +58,7 @@ namespace NPolyglot.Injector
             {
                 var path = Path.GetFullPath(file.ItemSpec);
                 var code = File.ReadAllText(path);
-                var tree = CSharpSyntaxTree.ParseText(code).GetRoot();
-                var resultCode = substitutor.Substitute(tree, HandleSubstitutableSegment);
+                var resultCode = substitutor.Substitute(code, HandleSubstitutableSegment);
 
                 if (code != resultCode)
                 {
@@ -123,7 +121,6 @@ namespace NPolyglot.Injector
             proc.ErrorDataReceived += (sender, args) => Log.LogError(args.Data);
             proc.StartInfo = new ProcessStartInfo()
             {
-                UseShellExecute = true,
                 RedirectStandardError = true,
                 RedirectStandardInput = true,
                 RedirectStandardOutput = true,

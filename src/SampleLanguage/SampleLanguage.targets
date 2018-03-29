@@ -1,11 +1,17 @@
 ﻿<Project>
 
+  <PropertyGroup>
+    <SampleLangDll>&quot;$([MSBuild]::NormalizePath('$(MSBuildThisFileDirectory)bin/Debug/netcoreapp1.0/publish/SampleLanguage.dll'))&quot;</SampleLangDll>
+  </PropertyGroup>
+
   <ItemGroup>
     <Injector Include="SubstSample">
-      <Command></Command> <!-- TODO -->
+      <Command>dotnet $(SampleLangDll) substSample</Command>
     </Injector>
-    <Transform Include="**\*.txt">
-      <TransformationCommand></TransformationCommand> <!-- TODO -->
+    <Transform Include="**\*.sample">
+      <InNormPath>&quot;$([MSBuild]::NormalizePath('%(Transform.Identity)'))&quot;</InNormPath>
+      <OutNormPath>&quot;$([MSBuild]::NormalizePath('%(Transform.OutputFile)'))&quot;</OutNormPath>
+      <TransformationCommand>dotnet $(SampleLangDll) sample %(Transform.InNormPath) %(Transform.OutNormPath)</TransformationCommand>
     </Transform>
   </ItemGroup>
 
