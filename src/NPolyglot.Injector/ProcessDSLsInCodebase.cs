@@ -116,11 +116,9 @@ namespace NPolyglot.Injector
         private bool RunCommand(string command, string input, out string output)
         {
             var proc = new Process();
-            var result = new StringBuilder();
-            proc.OutputDataReceived += (sender, args) => result.Append(args.Data);
-            proc.ErrorDataReceived += (sender, args) => Log.LogError(args.Data);
             proc.StartInfo = new ProcessStartInfo()
             {
+                UseShellExecute = false,
                 RedirectStandardError = true,
                 RedirectStandardInput = true,
                 RedirectStandardOutput = true,
@@ -130,10 +128,11 @@ namespace NPolyglot.Injector
             };
 
             proc.Start();
+            proc.StandardInput.WriteLine(input.Length);
             proc.StandardInput.Write(input);
             proc.WaitForExit();
 
-            output = result.ToString();
+            output = proc.StandardOutput.ReadToEnd();
             return proc.ExitCode == 0;
         }
 
