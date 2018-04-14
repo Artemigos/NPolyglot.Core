@@ -1,15 +1,21 @@
-﻿<Project>
-
-  <Import Project="..\NPolyglot.Injector\NPolyglot.Injector.props" />
-  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard1.3</TargetFramework>
   </PropertyGroup>
 
-  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
-  <Import Project="..\NPolyglot.Core\NPolyglot.Core.targets" />
-  <Import Project="..\NPolyglot.Injector\NPolyglot.Injector.targets" />
-  <Import Project="..\SampleLanguage\SampleLanguage.targets" />
+  <ItemGroup>
+    <ProjectReference Include="../NPolyglot.Injector/NPolyglot.Injector.csproj">
+      <IncludeAssets>build</IncludeAssets>
+    </ProjectReference>
+    <ProjectReference Include="../SampleLanguage/pack/SampleLanguage.Package.csproj">
+      <IncludeAssets>build</IncludeAssets>
+    </ProjectReference>
+  </ItemGroup>
+
+  <Target Name="NPolyglotDiag" BeforeTargets="CoreCompile">
+    <Message Importance="high" Text="Found transforms: @(Transform)" />
+    <Message Importance="high" Text="Injector output dir: @(InjectorOutPath)" />
+  </Target>
 
 </Project>

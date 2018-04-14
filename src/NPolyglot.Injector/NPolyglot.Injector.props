@@ -1,19 +1,7 @@
-<?xml version="1.0" encoding="utf-8" ?>
-<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Choose>
-    <When Condition="Exists('$(MSBuildThisFileDirectory)NPolyglot.Injector.dll')">
-      <PropertyGroup>
-        <NPolyglotInjectorDir>$(MSBuildThisFileDirectory)</NPolyglotInjectorDir>
-      </PropertyGroup>
-    </When>
-    <Otherwise>
-      <PropertyGroup>
-        <NPolyglotInjectorDir>$(MSBuildThisFileDirectory)bin\Debug\netstandard1.3\publish\</NPolyglotInjectorDir>
-      </PropertyGroup>
-    </Otherwise>
-  </Choose>
+<Project>
 
   <PropertyGroup>
-    <NPolyglotInjectorDll>$(NPolyglotInjectorDir)NPolyglot.Injector.dll</NPolyglotInjectorDll>
+    <NPolyglotInjectorDll>$(MSBuildThisFileDirectory)../tools/NPolyglot.Injector.dll</NPolyglotInjectorDll>
   </PropertyGroup>
+
 </Project>

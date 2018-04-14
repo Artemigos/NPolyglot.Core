@@ -1,0 +1,40 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>SampleLanguage</PackageId>
+    <Version>0.1.0</Version>
+    <Authors>Łukasz Klimek</Authors>
+    <PackageProjectUrl>https://github.com/Artemigos/NPolyglot.Core</PackageProjectUrl>
+    <PackageLicenseUrl>https://github.com/Artemigos/NPolyglot.Core/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageRequireLicenseAcceptance>False</PackageRequireLicenseAcceptance>
+    <Description>Sample language using NPolyglot.</Description>
+    <Copyright>Copyright 2018 Łukasz Klimek</Copyright>
+    <PackageTags>dsl;build;npolyglot</PackageTags>
+    <IsTool>True</IsTool>
+    <NoBuild>True</NoBuild>
+    <IncludeBuildOutput>False</IncludeBuildOutput>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <TargetFramework>netstandard1.0</TargetFramework>
+    <BeforePack>BuildLang</BeforePack>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="../SampleLanguage.targets" Pack="True" PackagePath="build/" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../../NPolyglot.Core/NPolyglot.Core.csproj" />
+  </ItemGroup>
+
+  <Target Name="BuildLang">
+    <MSBuild Projects="../SampleLanguage.csproj" Targets="Build">
+      <Output TaskParameter="TargetOutputs" ItemName="BuiltLangFiles" />
+    </MSBuild>
+    <ItemGroup>
+      <Content Include="@(BuiltLangFiles)" Pack="True" PackagePath="tools/" KeepMetadata="None" />
+    </ItemGroup>
+  </Target>
+
+</Project>

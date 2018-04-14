@@ -1,7 +1,7 @@
 ﻿<Project>
 
   <PropertyGroup>
-    <SampleLangDll>&quot;$([MSBuild]::NormalizePath('$(MSBuildThisFileDirectory)bin/Debug/netcoreapp1.0/publish/SampleLanguage.dll'))&quot;</SampleLangDll>
+    <SampleLangDll>&quot;$([MSBuild]::NormalizePath('$(MSBuildThisFileDirectory)../tools/SampleLanguage.dll'))&quot;</SampleLangDll>
   </PropertyGroup>
 
   <ItemGroup>

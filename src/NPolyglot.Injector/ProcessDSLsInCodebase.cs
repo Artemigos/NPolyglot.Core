@@ -42,7 +42,7 @@ namespace NPolyglot.Injector
             catch (Exception e)
             {
                 Log.LogError($"Failed to execute task '{TaskName}': {e}");
-                throw;
+                return false;
             }
         }
 

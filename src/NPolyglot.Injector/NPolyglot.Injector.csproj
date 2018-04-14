@@ -4,6 +4,19 @@
     <TargetFramework>netstandard1.3</TargetFramework>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <PackageId>NPolyglot.Injector</PackageId>
+    <Version>0.1.0</Version>
+    <Authors>Łukasz Klimek</Authors>
+    <PackageProjectUrl>https://github.com/Artemigos/NPolyglot.Core</PackageProjectUrl>
+    <PackageLicenseUrl>https://github.com/Artemigos/NPolyglot.Core/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageRequireLicenseAcceptance>False</PackageRequireLicenseAcceptance>
+    <Description>Package with inline code injections for C#.</Description>
+    <Copyright>Copyright 2018 Łukasz Klimek</Copyright>
+    <PackageTags>dsl;build;npolyglot</PackageTags>
+    <IsTool>True</IsTool>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="Microsoft.Build.Framework" Version="15.6.82" />
     <PackageReference Include="Microsoft.Build.Utilities.Core" Version="15.6.82" />
@@ -11,8 +24,15 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="NPolyglot.Injector.targets" />
-    <Content Include="NPolyglot.Injector.props" />
+    <ProjectReference Include="../NPolyglot.Core/NPolyglot.Core.csproj">
+      <IncludeAssets>build</IncludeAssets>
+      <PrivateAssets>none</PrivateAssets>
+    </ProjectReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="NPolyglot.Injector.targets" Pack="True" PackagePath="build/" />
+    <Content Include="NPolyglot.Injector.props" Pack="True" PackagePath="build/" />
   </ItemGroup>
 
 </Project>

@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>NPolyglot.Core</PackageId>
+    <Version>0.1.0</Version>
+    <Authors>Łukasz Klimek</Authors>
+    <PackageProjectUrl>https://github.com/Artemigos/NPolyglot.Core</PackageProjectUrl>
+    <PackageLicenseUrl>https://github.com/Artemigos/NPolyglot.Core/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageRequireLicenseAcceptance>False</PackageRequireLicenseAcceptance>
+    <Description>Package with the core of NPolyglot.</Description>
+    <Copyright>Copyright 2018 Łukasz Klimek</Copyright>
+    <PackageTags>dsl;build;npolyglot</PackageTags>
+    <NoBuild>True</NoBuild>
+    <IncludeBuildOutput>False</IncludeBuildOutput>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <TargetFramework>netstandard1.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="NPolyglot.Core.targets" Pack="True" PackagePath="build/" />
+  </ItemGroup>
+
+</Project>
